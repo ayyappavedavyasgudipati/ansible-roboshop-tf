@@ -1,0 +1,2 @@
+#mysql_host_passwd: RoboShop@1
+mysql_host_passwd: "{{ lookup('amazon.aws.aws_ssm', '/roboshop/mysql/root_password', region='us-east-1') }}"

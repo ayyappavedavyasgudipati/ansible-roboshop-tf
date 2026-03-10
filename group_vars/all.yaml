@@ -1,0 +1,11 @@
+ansible_user: ec2-user
+ansible_password: DevOps321
+MONGODB_HOST: mongodb-dev.opswithvyas.online
+CATALOGUE_HOST: catalogue-dev.opswithvyas.online
+REDIS_HOST: redis-dev.opswithvyas.online
+USER_HOST: user-dev.opswithvyas.online
+CART_HOST: cart-dev.opswithvyas.online
+MYSQL_HOST: mysql-dev.opswithvyas.online
+SHIPPING_HOST: shipping-dev.opswithvyas.online
+RABBITMQ_HOST: rabbitmq-dev.opswithvyas.online
+PAYMENT_HOST: payment-dev.opswithvyas.online

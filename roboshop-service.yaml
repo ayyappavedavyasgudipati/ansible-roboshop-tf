@@ -1,0 +1,108 @@
+- name: creating aws services in ansible
+  hosts: local
+  connection: local
+
+
+  vars:
+    sgid: "sg-08ead4da4a18d399e"
+    ami: "ami-0220d79f3f480ecf5"
+    instance_type: t3.micro
+    env: dev
+    dns: opswithvyas.online
+    instances: "{{ instances }}"
+    action: create
+
+
+  tasks:
+  - name: Create EC2 instances
+    amazon.aws.ec2_instance:
+      name: "{{ item }}-{{ env }}"
+      instance_type: "{{ instance_type }}"
+      image_id: "{{ ami }}"
+      region: us-east-1
+      security_group: "{{ sgid }}"
+      tags:
+        Project: roboshop
+        Component: "{{ item }}"
+        Environment: "{{ env }}"
+        Name: "{{ item }}-{{ env }}"
+    loop:
+      "{{ instances }}"
+    register: instance_output
+    when: action == "create"
+
+
+
+  - name: print the output
+    ansible.builtin.debug:
+      msg: "{{ instance_output }}"
+    when: action == "create"
+
+
+
+  - name: creating route53 records
+    amazon.aws.route53:
+      state: present
+      zone: "{{ dns }}"
+      record: "{{ item.item }}-{{ env }}.{{ dns }}"
+      type: A
+      ttl: 1
+      value: "{{ item.instances[0].private_ip_address }}"
+      overwrite: true
+    loop: "{{ instance_output.results }}" 
+    when: 
+    - item.item != "frontend"
+    - action == "create"
+    
+    
+
+  - name: creating frontend route53 records
+    amazon.aws.route53:
+      state: present
+      zone: "{{ dns }}"
+      record: "roboshop-{{ env }}.{{ dns }}"
+      type: A
+      ttl: 1
+      value: "{{ item.instances[0].public_ip_address }}"
+      overwrite: true
+    loop: "{{ instance_output.results }}" 
+    when: 
+    - item.item == "frontend"
+    - action == "create"
+
+
+
+
+    ##Delete the instances and records#
+  - name: Delete EC2 instances
+    amazon.aws.ec2_instance:
+      name: "{{ item }}-{{ env }}"
+      state: absent
+      region: us-east-1
+    loop:
+      "{{ instances }}"
+    register: instance_delete_output
+    when: action == "destroy"
+
+  - name: deleting route53 records
+    amazon.aws.route53:
+      state: absent
+      zone: "{{ dns }}"
+      record: "{{ item }}-{{ env }}.{{ dns }}"
+      type: A
+    loop: "{{ instances  }}" 
+    when: 
+    - item != "frontend"
+    - action == "destroy"
+    
+
+  - name: creating frontend route53 records
+    amazon.aws.route53:
+      state: absent
+      zone: "{{ dns }}"
+      record: "roboshop-{{ env }}.{{ dns }}"
+      type: A
+    loop: "{{ instances  }}" 
+    when: 
+    - item == "frontend"
+    - action == "destroy"
