@@ -8,6 +8,13 @@
     name: mysqld
     state: restarted
     enabled: yes  
-    
+
+- name: install boto3 and botocore
+  ansible.builtin.pip:
+    name: "{{ item }}"    
+  loop:
+  - boto3
+  - botocore
+  
 - name: adding system user
   ansible.builtin.command: mysql_secure_installation --set-root-pass "{{ mysql_host_passwd }}"    

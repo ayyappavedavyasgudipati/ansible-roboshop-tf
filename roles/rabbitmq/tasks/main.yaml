@@ -12,7 +12,14 @@
   ansible.builtin.service:
     name: rabbitmq-server
     state: restarted
-    enabled: yes 
+    enabled: yes
+
+- name: install boto3 and botocore
+  ansible.builtin.pip:
+    name: "{{ item }}"    
+  loop:
+  - boto3
+  - botocore     
 
 - name: creating rabbitmq user
   community.rabbitmq.rabbitmq_user:
