@@ -1,2 +1,2 @@
 rabbitmq_user: roboshop 
-rabbitmq_passwd: "{{ lookup('amazon.aws.aws_ssm', '/roboshop/rabbitmq/password', region='us-east-1') }}"
+rabbitmq_passwd: roboshop123
