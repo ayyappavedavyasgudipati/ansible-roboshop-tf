@@ -1,5 +1,7 @@
 ansible_user: ec2-user
 ansible_password: DevOps321
+env: dev
+dns: opswithvyas.online
 MONGODB_HOST: mongodb-dev.opswithvyas.online
 CATALOGUE_HOST: catalogue-dev.opswithvyas.online
 REDIS_HOST: redis-dev.opswithvyas.online
